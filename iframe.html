@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>title</title>
+  </head>
+  <body>
+    <script src="./jquery.js"></script>
+    <script src="./popper.js"></script>
+    <script src="./tippy.js"></script>
+
+    <br><br><br><br><br><br><br><br><br><br>
+
+    <button data-tippy-content="Tooltip">Test</button>
+
+
+    <div style="display: none;">
+      <div class="form">
+        <div>test</div>
+        <div>test</div>
+        <div>test</div>
+        <div>test</div>
+        <button>show modal</button>
+      </div>
+    </div>
+
+    <script>
+        window.cl = console.log
+
+        const $ref = $('button').get()[0]
+        const $form = $('.form').get()[0]
+
+        let isLoading = false
+
+        const tippyInstance = tippy($ref, {
+        appendTo: document.body,
+            interactive: true,
+        hideOnClick: false,
+        maxWidth: 300,
+        onHide: () => {
+            if (isLoading) {
+            cl('cancel hide')
+            return false
+            }
+        },
+        })
+
+        $('button[data-tippy-content]').click(() => {
+            isLoading = true
+            tippyInstance.setContent($form)
+        })
+
+        $('.form button').click(() => {
+            window.parent.postMessage('child', '*')
+            tippyInstance.popperInstance.update()
+            //setTimeout(() => {
+                tippyInstance.setContent('waiting...')
+            //}, 500)
+        })
+
+        window.addEventListener('message', () => {
+            cl('msg from parent window')
+            cl('manual trigger')
+            isLoading = false
+            tippyInstance.popperInstance.update()
+                tippyInstance.setProps({ trigger: 'manual' })
+        })
+    </script>
+    <style>
+        button {
+
+            cursor: pointer;
+        }
+        button[data-update] {
+            margin-left: 25px;
+          }
+
+          .form {
+            width: 200px;
+            height: 200px;
+            background: blue;
+
+          }
+    </style>
+  </body>
+</html>

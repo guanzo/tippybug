@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>title</title>
+  </head>
+  <body>
+    <script src="./jquery.js"></script>
+    <iframe src="./iframe.html"></iframe>
+
+    <div class="modal">
+        <button>close</button>
+      </div>
+
+    <script>
+        const $iframe = $('iframe').get()[0]
+        const $modal = $('.modal')
+        $modal.hide()
+
+
+        $('.modal button').click(() => {
+            $modal.hide()
+            $iframe.contentWindow.postMessage('yo')
+        })
+
+        window.cl = console.log
+        window.addEventListener('message', e => {
+            if (e.data === 'child') {
+                cl('msg from child window', e)
+                $modal.show()
+            }
+        })
+    </script>
+    <style>
+        iframe {
+            position: relative;
+            z-index: 1;
+            width: 320px;
+            height: 500px;
+            outline: 1px solid black;
+        }
+
+        .modal {
+          width: 200px;
+          height: 100px;
+          background: lightgrey;
+          position: fixed;
+          z-index: 100000;
+          top: 305px;
+          left: 50px;
+        }
+    </style>
+  </body>
+</html>
